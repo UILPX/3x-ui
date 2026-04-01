@@ -28,6 +28,16 @@
 bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
 ```
 
+### 一键安装（Fork 仓库 + 中国镜像可用）
+
+> 已安装用户可复用同样的环境变量执行升级，数据不会丢失（数据库位于 `/etc/x-ui/`，升级脚本仅替换程序文件）。
+
+```bash
+export XUI_GITHUB_REPO="你的GitHub用户名/3x-ui"
+export XUI_GITHUB_PROXY="https://ghfast.top"  # 可选，中国网络建议
+bash <(curl -Ls "${XUI_GITHUB_PROXY}/https://raw.githubusercontent.com/${XUI_GITHUB_REPO}/main/install.sh")
+```
+
 完整文档请参阅 [项目Wiki](https://github.com/MHSanaei/3x-ui/wiki)。
 
 ## 特别感谢

@@ -3,22 +3,8 @@ name: Release 3X-UI
 on:
   workflow_dispatch:
   push:
-    branches:
-      - '**'
     tags:
       - "v*.*.*"
-    paths:
-      - '**.js'
-      - '**.css'
-      - '**.html'
-      - '**.sh'
-      - '**.go'
-      - 'go.mod'
-      - 'go.sum'
-      - 'x-ui.service.debian'
-      - 'x-ui.service.arch'
-      - 'x-ui.service.rhel'
-  pull_request:
 
 jobs:
   analyze:
@@ -62,16 +48,12 @@ jobs:
     needs: analyze
     permissions:
       contents: write
+    env:
+      GH_PROXY: https://ghfast.top/
     strategy:
       matrix:
         platform:
           - amd64
-          - arm64
-          - armv7
-          - armv6
-          - 386
-          - armv5
-          - s390x
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -126,7 +108,7 @@ jobs:
           cd x-ui/bin
           
           # Download dependencies
-          Xray_URL="https://github.com/XTLS/Xray-core/releases/download/v26.2.6/"
+          Xray_URL="${GH_PROXY}https://github.com/XTLS/Xray-core/releases/download/v26.2.6/"
           if [ "${{ matrix.platform }}" == "amd64" ]; then
             wget -q ${Xray_URL}Xray-linux-64.zip
             unzip Xray-linux-64.zip
@@ -157,12 +139,12 @@ jobs:
             rm -f Xray-linux-s390x.zip
           fi
           rm -f geoip.dat geosite.dat
-          wget -q https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
-          wget -q https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
-          wget -q -O geoip_IR.dat https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geoip.dat
-          wget -q -O geosite_IR.dat https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geosite.dat
-          wget -q -O geoip_RU.dat https://github.com/runetfreedom/russia-v2ray-rules-dat/releases/latest/download/geoip.dat
-          wget -q -O geosite_RU.dat https://github.com/runetfreedom/russia-v2ray-rules-dat/releases/latest/download/geosite.dat
+          wget -q ${GH_PROXY}https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
+          wget -q ${GH_PROXY}https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
+          wget -q -O geoip_IR.dat ${GH_PROXY}https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geoip.dat
+          wget -q -O geosite_IR.dat ${GH_PROXY}https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geosite.dat
+          wget -q -O geoip_RU.dat ${GH_PROXY}https://github.com/runetfreedom/russia-v2ray-rules-dat/releases/latest/download/geoip.dat
+          wget -q -O geosite_RU.dat ${GH_PROXY}https://github.com/runetfreedom/russia-v2ray-rules-dat/releases/latest/download/geosite.dat
           mv xray xray-linux-${{ matrix.platform }}
           cd ../..
           
@@ -184,16 +166,19 @@ jobs:
           file: x-ui-linux-${{ matrix.platform }}.tar.gz
           asset_name: x-ui-linux-${{ matrix.platform }}.tar.gz
           overwrite: true
-          prerelease: true
+          prerelease: false
 
   # =================================
   #  Windows Build
   # =================================
   build-windows:
+    if: false
     name: Build for Windows
     needs: analyze
     permissions:
       contents: write
+    env:
+      GH_PROXY: https://ghfast.top/
     strategy:
       matrix:
         platform:
@@ -244,17 +229,17 @@ jobs:
           cd x-ui\bin
           
           # Download Xray for Windows
-          $Xray_URL = "https://github.com/XTLS/Xray-core/releases/download/v26.2.6/"
+          $Xray_URL = "${env:GH_PROXY}https://github.com/XTLS/Xray-core/releases/download/v26.2.6/"
           Invoke-WebRequest -Uri "${Xray_URL}Xray-windows-64.zip" -OutFile "Xray-windows-64.zip"
           Expand-Archive -Path "Xray-windows-64.zip" -DestinationPath .
           Remove-Item "Xray-windows-64.zip"
           Remove-Item geoip.dat, geosite.dat -ErrorAction SilentlyContinue
-          Invoke-WebRequest -Uri "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat" -OutFile "geoip.dat"
-          Invoke-WebRequest -Uri "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat" -OutFile "geosite.dat"
-          Invoke-WebRequest -Uri "https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geoip.dat" -OutFile "geoip_IR.dat"
-          Invoke-WebRequest -Uri "https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geosite.dat" -OutFile "geosite_IR.dat"
-          Invoke-WebRequest -Uri "https://github.com/runetfreedom/russia-v2ray-rules-dat/releases/latest/download/geoip.dat" -OutFile "geoip_RU.dat"
-          Invoke-WebRequest -Uri "https://github.com/runetfreedom/russia-v2ray-rules-dat/releases/latest/download/geosite.dat" -OutFile "geosite_RU.dat"
+          Invoke-WebRequest -Uri "${env:GH_PROXY}https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat" -OutFile "geoip.dat"
+          Invoke-WebRequest -Uri "${env:GH_PROXY}https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat" -OutFile "geosite.dat"
+          Invoke-WebRequest -Uri "${env:GH_PROXY}https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geoip.dat" -OutFile "geoip_IR.dat"
+          Invoke-WebRequest -Uri "${env:GH_PROXY}https://github.com/chocolate4u/Iran-v2ray-rules/releases/latest/download/geosite.dat" -OutFile "geosite_IR.dat"
+          Invoke-WebRequest -Uri "${env:GH_PROXY}https://github.com/runetfreedom/russia-v2ray-rules-dat/releases/latest/download/geoip.dat" -OutFile "geoip_RU.dat"
+          Invoke-WebRequest -Uri "${env:GH_PROXY}https://github.com/runetfreedom/russia-v2ray-rules-dat/releases/latest/download/geosite.dat" -OutFile "geosite_RU.dat"
           Rename-Item xray.exe xray-windows-amd64.exe
           cd ..
           Copy-Item -Path ..\windows_files\* -Destination . -Recurse
