@@ -40,6 +40,9 @@ func NewSubService(showInfo bool, remarkModel string) *SubService {
 
 // GetSubs retrieves subscription links for a given subscription ID and host.
 func (s *SubService) GetSubs(subId string, host string) ([]string, int64, xray.ClientTraffic, error) {
+	if configuredHost, err := s.settingService.GetSubReadHost(); err == nil {
+		host = s.normalizeSubReadHost(configuredHost, host)
+	}
 	s.address = host
 	var result []string
 	var traffic xray.ClientTraffic
@@ -110,6 +113,20 @@ func (s *SubService) GetSubs(subId string, host string) ([]string, int64, xray.C
 		}
 	}
 	return result, lastOnline, traffic, nil
+}
+
+func (s *SubService) normalizeSubReadHost(configuredHost, fallbackHost string) string {
+	configuredHost = strings.TrimSpace(configuredHost)
+	if configuredHost == "" {
+		return fallbackHost
+	}
+	configuredHost = strings.TrimRight(configuredHost, "/")
+	if strings.Contains(configuredHost, "://") {
+		if parsed, err := url.Parse(configuredHost); err == nil && parsed.Host != "" {
+			return parsed.Host
+		}
+	}
+	return configuredHost
 }
 
 func (s *SubService) getInboundsBySubId(subId string) ([]*model.Inbound, error) {

@@ -66,6 +66,7 @@ type AllSetting struct {
 	SubPort                     int    `json:"subPort" form:"subPort"`                                         // Subscription server port
 	SubPath                     string `json:"subPath" form:"subPath"`                                         // Base path for subscription URLs
 	SubDomain                   string `json:"subDomain" form:"subDomain"`                                     // Domain for subscription server validation
+	SubReadHost                 string `json:"subReadHost" form:"subReadHost"`                                 // Override host[:port] used inside generated subscription nodes
 	SubCertFile                 string `json:"subCertFile" form:"subCertFile"`                                 // SSL certificate file for subscription server
 	SubKeyFile                  string `json:"subKeyFile" form:"subKeyFile"`                                   // SSL private key file for subscription server
 	SubUpdates                  int    `json:"subUpdates" form:"subUpdates"`                                   // Subscription update interval in minutes

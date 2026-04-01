@@ -28,6 +28,16 @@ As an enhanced fork of the original X-UI project, 3X-UI provides improved stabil
 bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
 ```
 
+### One-command install (fork repo + China mirror friendly)
+
+> Existing installations can reuse the same env vars for upgrades with no data loss (`/etc/x-ui/` is preserved).
+
+```bash
+export XUI_GITHUB_REPO="your-github-user/3x-ui"
+export XUI_GITHUB_PROXY="https://ghfast.top" # optional proxy/mirror prefix
+bash <(curl -Ls "${XUI_GITHUB_PROXY}/https://raw.githubusercontent.com/${XUI_GITHUB_REPO}/main/install.sh")
+```
+
 For full documentation, please visit the [project Wiki](https://github.com/MHSanaei/3x-ui/wiki).
 
 ## A Special Thanks to
