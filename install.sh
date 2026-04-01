@@ -11,7 +11,7 @@ cur_dir=$(pwd)
 xui_folder="${XUI_MAIN_FOLDER:=/usr/local/x-ui}"
 xui_service="${XUI_SERVICE:=/etc/systemd/system}"
 xui_repo="${XUI_GITHUB_REPO:=MHSanaei/3x-ui}"
-xui_github_proxy="${XUI_GITHUB_PROXY:=}"
+xui_github_proxy="${XUI_GITHUB_PROXY:=https://ghfast.top}"
 xui_skip_ssl="${XUI_SKIP_SSL:=false}"
 xui_raw_base="${XUI_RAW_BASE:=https://raw.githubusercontent.com/${xui_repo}/main}"
 xui_release_api="${XUI_RELEASE_API:=https://api.github.com/repos/${xui_repo}/releases/latest}"
@@ -791,10 +791,10 @@ install_x-ui() {
     
     # Download resources
     if [ $# == 0 ]; then
-        tag_version=$(curl -Ls "$(with_proxy "${xui_release_api}")" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        tag_version=$(curl -Ls "${xui_release_api}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$tag_version" ]]; then
             echo -e "${yellow}Trying to fetch version with IPv4...${plain}"
-            tag_version=$(curl -4 -Ls "$(with_proxy "${xui_release_api}")" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+            tag_version=$(curl -4 -Ls "${xui_release_api}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
             if [[ ! -n "$tag_version" ]]; then
                 echo -e "${red}Failed to fetch x-ui version, it may be due to GitHub API restrictions, please try it later${plain}"
                 exit 1
