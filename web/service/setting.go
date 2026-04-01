@@ -790,22 +790,29 @@ func (s *SettingService) GetDefaultSettings(host string) (any, error) {
 		subDomain, _ := s.GetSubDomain()
 		subKeyFile, _ := s.GetSubKeyFile()
 		subCertFile, _ := s.GetSubCertFile()
-		subTLS := false
-		if subKeyFile != "" && subCertFile != "" {
-			subTLS = true
-		}
 		if subDomain == "" {
 			subDomain = extractHostname(host)
 		}
-		if subTLS {
-			subURI = "https://"
+
+		// Prefer HTTPS and hide port by default when subscription domain is explicitly configured.
+		// This supports reverse-proxy deployments where users expect clean HTTPS links.
+		if domain, _ := s.GetSubDomain(); strings.TrimSpace(domain) != "" {
+			subURI = "https://" + domain
 		} else {
-			subURI = "http://"
-		}
-		if (subPort == 443 && subTLS) || (subPort == 80 && !subTLS) {
-			subURI += subDomain
-		} else {
-			subURI += fmt.Sprintf("%s:%d", subDomain, subPort)
+			subTLS := false
+			if subKeyFile != "" && subCertFile != "" {
+				subTLS = true
+			}
+			if subTLS {
+				subURI = "https://"
+			} else {
+				subURI = "http://"
+			}
+			if (subPort == 443 && subTLS) || (subPort == 80 && !subTLS) {
+				subURI += subDomain
+			} else {
+				subURI += fmt.Sprintf("%s:%d", subDomain, subPort)
+			}
 		}
 		if subEnable && result["subURI"].(string) == "" {
 			result["subURI"] = subURI + subPath
