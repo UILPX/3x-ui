@@ -396,6 +396,8 @@
 "subPathDesc" = "订阅服务使用的 URI 路径（以 '/' 开头，以 '/' 结尾）"
 "subDomain" = "监听域名"
 "subDomainDesc" = "订阅服务监听的域名（留空表示监听所有域名和 IP）"
+"subReadHost" = "节点地址覆盖"
+"subReadHostDesc" = "可选，设置订阅读取到的节点 host[:port]；留空则使用请求域名。"
 "subUpdates" = "更新间隔"
 "subUpdatesDesc" = "客户端应用中订阅 URL 的更新间隔（单位：小时）"
 "subEncrypt" = "编码"
