@@ -396,6 +396,8 @@
 "subPathDesc" = "The URI path for the subscription service. (begins with ‘/‘ and concludes with ‘/‘)"
 "subDomain" = "Listen Domain"
 "subDomainDesc" = "The domain name for the subscription service. (leave blank to listen on all domains and IPs)"
+"subReadHost" = "Node Host Override"
+"subReadHostDesc" = "Optional host[:port] used in generated node links. Leave empty to use the request host."
 "subUpdates" = "Update Intervals"
 "subUpdatesDesc" = "The update intervals of the subscription URL in the client apps. (unit: hour)"
 "subEncrypt" = "Encode"

@@ -30,6 +30,13 @@
             </template>
         </a-setting-list-item>
         <a-setting-list-item paddings="small">
+            <template #title>{{ i18n "pages.settings.subReadHost"}}</template>
+            <template #description>{{ i18n "pages.settings.subReadHostDesc"}}</template>
+            <template #control>
+                <a-input type="text" placeholder="domain or domain:port" v-model="allSetting.subReadHost"></a-input>
+            </template>
+        </a-setting-list-item>
+        <a-setting-list-item paddings="small">
             <template #title>{{ i18n "pages.settings.subPort"}}</template>
             <template #description>{{ i18n "pages.settings.subPortDesc"}}</template>
             <template #control>
