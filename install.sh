@@ -12,6 +12,7 @@ xui_folder="${XUI_MAIN_FOLDER:=/usr/local/x-ui}"
 xui_service="${XUI_SERVICE:=/etc/systemd/system}"
 xui_repo="${XUI_GITHUB_REPO:=MHSanaei/3x-ui}"
 xui_github_proxy="${XUI_GITHUB_PROXY:=}"
+xui_skip_ssl="${XUI_SKIP_SSL:=false}"
 xui_raw_base="${XUI_RAW_BASE:=https://raw.githubusercontent.com/${xui_repo}/main}"
 xui_release_api="${XUI_RELEASE_API:=https://api.github.com/repos/${xui_repo}/releases/latest}"
 xui_release_base="${XUI_RELEASE_BASE:=https://github.com/${xui_repo}/releases/download}"
@@ -532,7 +533,14 @@ prompt_and_setup_ssl() {
 
     local ssl_choice=""
 
+    if [[ "${xui_skip_ssl,,}" == "true" || "${xui_skip_ssl}" == "1" ]]; then
+        SSL_HOST="${server_ip}"
+        echo -e "${yellow}Skipping SSL setup (XUI_SKIP_SSL enabled).${plain}"
+        return 0
+    fi
+
     echo -e "${yellow}Choose SSL certificate setup method:${plain}"
+    echo -e "${green}0.${plain} Skip SSL setup for now"
     echo -e "${green}1.${plain} Let's Encrypt for Domain (90-day validity, auto-renews)"
     echo -e "${green}2.${plain} Let's Encrypt for IP Address (6-day validity, auto-renews)"
     echo -e "${green}3.${plain} Custom SSL Certificate (Path to existing files)"
@@ -540,12 +548,16 @@ prompt_and_setup_ssl() {
     read -rp "Choose an option (default 2 for IP): " ssl_choice
     ssl_choice="${ssl_choice// /}"  # Trim whitespace
     
-    # Default to 2 (IP cert) if input is empty or invalid (not 1 or 3)
-    if [[ "$ssl_choice" != "1" && "$ssl_choice" != "3" ]]; then
+    # Default to 2 (IP cert) if input is empty or invalid (not 0/1/3)
+    if [[ "$ssl_choice" != "0" && "$ssl_choice" != "1" && "$ssl_choice" != "3" ]]; then
         ssl_choice="2"
     fi
 
     case "$ssl_choice" in
+    0)
+        SSL_HOST="${server_ip}"
+        echo -e "${yellow}Skipping SSL setup. Panel will use HTTP until certificate is configured manually.${plain}"
+        ;;
     1)
         # User chose Let's Encrypt domain option
         echo -e "${green}Using Let's Encrypt for domain certificate...${plain}"
@@ -696,9 +708,9 @@ config_after_install() {
             
             echo ""
             echo -e "${green}═══════════════════════════════════════════${plain}"
-            echo -e "${green}     SSL Certificate Setup (MANDATORY)     ${plain}"
+            echo -e "${green}     SSL Certificate Setup (RECOMMENDED)   ${plain}"
             echo -e "${green}═══════════════════════════════════════════${plain}"
-            echo -e "${yellow}For security, SSL certificate is required for all panels.${plain}"
+            echo -e "${yellow}For security, SSL certificate is strongly recommended.${plain}"
             echo -e "${yellow}Let's Encrypt now supports both domains and IP addresses!${plain}"
             echo ""
 
