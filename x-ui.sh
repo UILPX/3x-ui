@@ -73,9 +73,21 @@ os_version=$(grep "^VERSION_ID" /etc/os-release | cut -d '=' -f2 | tr -d '"' | t
 xui_folder="${XUI_MAIN_FOLDER:=/usr/local/x-ui}"
 xui_service="${XUI_SERVICE:=/etc/systemd/system}"
 log_folder="${XUI_LOG_FOLDER:=/var/log/x-ui}"
+xui_repo="${XUI_GITHUB_REPO:=MHSanaei/3x-ui}"
+xui_github_proxy="${XUI_GITHUB_PROXY:=}"
+xui_raw_base="${XUI_RAW_BASE:=https://raw.githubusercontent.com/${xui_repo}/main}"
 mkdir -p "${log_folder}"
 iplimit_log_path="${log_folder}/3xipl.log"
 iplimit_banned_log_path="${log_folder}/3xipl-banned.log"
+
+with_proxy() {
+    local target="$1"
+    if [[ -n "${xui_github_proxy}" ]]; then
+        echo "${xui_github_proxy%/}/${target}"
+    else
+        echo "${target}"
+    fi
+}
 
 confirm() {
     if [[ $# > 1 ]]; then
@@ -108,7 +120,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh)
+    bash <(curl -Ls "$(with_proxy "${xui_raw_base}/install.sh")")
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -127,7 +139,7 @@ update() {
         fi
         return 0
     fi
-    bash <(curl -Ls https://raw.githubusercontent.com/MHSanaei/3x-ui/main/update.sh)
+    bash <(curl -Ls "$(with_proxy "${xui_raw_base}/update.sh")")
     if [[ $? == 0 ]]; then
         LOGI "Update is complete, Panel has automatically restarted "
         before_show_menu
@@ -145,7 +157,7 @@ update_menu() {
         return 0
     fi
 
-    curl -fLRo /usr/bin/x-ui https://raw.githubusercontent.com/MHSanaei/3x-ui/main/x-ui.sh
+    curl -fLRo /usr/bin/x-ui "$(with_proxy "${xui_raw_base}/x-ui.sh")"
     chmod +x ${xui_folder}/x-ui.sh
     chmod +x /usr/bin/x-ui
 
@@ -603,7 +615,7 @@ enable_bbr() {
 }
 
 update_shell() {
-    curl -fLRo /usr/bin/x-ui -z /usr/bin/x-ui https://github.com/MHSanaei/3x-ui/raw/main/x-ui.sh
+    curl -fLRo /usr/bin/x-ui -z /usr/bin/x-ui "$(with_proxy "${xui_raw_base}/x-ui.sh")"
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "Failed to download script, Please check whether the machine can connect Github"
